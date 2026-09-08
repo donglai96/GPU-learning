@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cuda_runtime.h>
+#include <cmath>
 
 #define CUDA_CHECK(call)                                                   \
 do {                                                                       \
@@ -95,20 +96,11 @@ int main()
         cudaMemcpyDeviceToHost
     ));
 
-    // Print the first 10 results.
-    for (int i = 0; i < 10; ++i) {
-        printf(
-            "%f + %f = %f\n",
-            A_h[i],
-            B_h[i],
-            C_h[i]
-        );
-    }
 
 	int bad = 0;
 	for (int i = 0; i < N ; ++i){
 		float ref = A_h[i] + B_h[i];
-		if (fabsf(C_h[i] - ref) > 1e-5*fabsf(ref) + 1e-6f){
+		if (fabsf(C_h[i] - ref) > 1e-5f*fabsf(ref) + 1e-6f){
 			if (bad < 5) printf ("mismatch at %d %f %f\n", i, C_h[i], ref);
 			++bad;
 			
