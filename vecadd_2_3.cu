@@ -27,9 +27,9 @@ void vecAdd(const float* A, const float* B, float* C, int N)
 
 int main()
 {
-    const int N = 1024;
+    const int N = (1<<24) + 37;
     const size_t bytes = N * sizeof(float);
-
+	srand(42);
     // Allocate host arrays.
     // Use [] because we need an array containing N floats.
     float* A_h = new float[N];
@@ -38,8 +38,8 @@ int main()
 
     // Initialize host input arrays.
     for (int i = 0; i < N; ++i) {
-        A_h[i] = static_cast<float>(i);
-        B_h[i] = static_cast<float>(2 * i);
+        A_h[i] = rand()/(float)RAND_MAX;
+        B_h[i] = rand()/(float)RAND_MAX;
     }
 
     // Device pointers.
@@ -105,6 +105,16 @@ int main()
         );
     }
 
+	int bad = 0;
+	for (int i = 0; i < N ; ++i){
+		float ref = A_h[i] + B_h[i];
+		if (fabsf(C_h[i] - ref) > 1e-5*fabsf(ref) + 1e-6f){
+			if (bad < 5) printf ("mismatch at %d %f %f\n", i, C_h[i], ref);
+			++bad;
+			
+		}
+	}
+	printf(bad ? "%d errors\n" : "no errors\n", bad);
     // Free device memory.
     CUDA_CHECK(cudaFree(A_d));
     CUDA_CHECK(cudaFree(B_d));
