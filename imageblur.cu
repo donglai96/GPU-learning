@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cuda_runtime.h>
+#include "bench.h"
 
 #define CUDA_CHECK(call)                                                   \
 do {                                                                       \
@@ -132,6 +133,20 @@ int main()
         }
     }
     printf(bad ? "%d errors\n" : "no errors\n", bad);
+
+    // Benchmark the kernel.
+    const int warmup = 10;
+    const int iters  = 100;
+    float ms = bench(warmup, iters, [&]{
+        blurKernel<<<blocks, threadsPerBlock>>>(out_d, in_d, W, H);
+    });
+    CUDA_CHECK(cudaGetLastError());
+
+    // Minimum bytes moved per launch: read in + write out = 2 arrays.
+    // Actual traffic is higher because neighbor reads overlap.
+    double gbytes = 2.0 * bytes / 1e9;
+    printf("imageblur: %.4f ms/iter, >= %.1f GB/s (in+out only)\n",
+           ms, gbytes / (ms / 1e3));
 
     // Free device memory.
     CUDA_CHECK(cudaFree(in_d));

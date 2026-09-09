@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cuda_runtime.h>
 #include <cmath>
+#include "bench.h"
 
 #define CUDA_CHECK(call)                                                   \
 do {                                                                       \
@@ -101,6 +102,18 @@ int main()
         }
     }
     printf(bad ? "%d errors\n" : "no errors\n", bad);
+
+    // Benchmark the kernel.
+    const int warmup = 10;
+    const int iters  = 100;
+    float ms = bench(warmup, iters, [&]{
+        matAdd<<<blocks, threadsPerBlock>>>(A_d, B_d, C_d, W, H);
+    });
+    CUDA_CHECK(cudaGetLastError());
+
+    // Bytes moved per launch: read A, read B, write C = 3 arrays.
+    double gbytes = 3.0 * bytes / 1e9;
+    printf("matadd: %.4f ms/iter, %.1f GB/s\n", ms, gbytes / (ms / 1e3));
 
     // Free device memory.
     CUDA_CHECK(cudaFree(A_d));
