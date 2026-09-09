@@ -8,8 +8,8 @@
 #
 set -euo pipefail
 
-# 容器镜像 (与 ~/.bashrc 中的 cuSif 保持一致), 可用环境变量覆盖
-CUSIF="${cuSif:-/export/Public/donglma/container/Alma10-CUDA-13.2-Algo-Dev-1.4.0.sif}"
+# 容器镜像, 从环境变量 cuSif 读取 (在自己的 shell 里设置, 不入库)
+CUSIF="${cuSif:?please set the cuSif env var to the container image path}"
 
 RUN_IN=(apptainer exec --nv "$CUSIF")
 

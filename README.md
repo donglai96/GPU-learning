@@ -5,9 +5,8 @@
 ## 环境
 
 - 编译器: 容器内 `/usr/local/cuda/bin/nvcc` (CUDA 13.2)
-- 容器镜像: `$cuSif` (定义在 `~/.bashrc`)
-- GPU 架构: `sm_89` (L40), 如需修改改 `Makefile` 里的 `ARCH`
-- `/export`、`/rapid` 已由站点默认挂载
+- 容器镜像: 通过环境变量 `cuSif` 指定 (`export cuSif=/path/to/cuda.sif`), 不入库
+- GPU 架构: `sm_89`, 如需修改改 `Makefile` 里的 `ARCH`
 
 ## 用法
 
@@ -26,7 +25,7 @@ make clean      # 清理 build/
 ./run.sh vecadd_2_3 arg1  # 运行时把 arg1 传给程序
 ```
 
-可用环境变量 `cuSif` 覆盖容器镜像路径; 需额外绑定目录时用 `make BIND="--bind /some/path"`。
+运行前需设置环境变量 `cuSif` 指向容器镜像; 需额外绑定目录时用 `make BIND="--bind /some/path"`。
 
 ## Week 1
 

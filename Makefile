@@ -1,9 +1,10 @@
 # GPU 学习项目 Makefile
 # 所有 nvcc 编译都通过 apptainer 容器 (cuSif) 执行
 
-# 容器镜像路径 (与 ~/.bashrc 中的 cuSif 保持一致)
-CUSIF ?= /export/Public/donglma/container/Alma10-CUDA-13.2-Algo-Dev-1.4.0.sif
-# /export /rapid 站点已默认挂载, 如需额外绑定可设置: make BIND="--bind /foo"
+# 容器镜像路径, 从环境变量 cuSif 读取 (在自己的 shell 里设置, 不入库)
+# 例如: export cuSif=/path/to/cuda.sif
+CUSIF ?= $(cuSif)
+# 如需额外绑定目录, 设置: make BIND="--bind /foo"
 BIND ?=
 
 # 在容器内执行命令的封装 (--nv 开启 GPU)
